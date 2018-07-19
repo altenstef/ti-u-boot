@@ -43,6 +43,8 @@
 #define CONFIG_CMD_GPT
 #define CONFIG_EFI_PARTITION
 
+#define CONFIG_SUPPORT_EMMC_BOOT
+
 #ifdef CONFIG_NAND
 #define NANDARGS \
 	"mtdids=" MTDIDS_DEFAULT "\0" \
@@ -90,6 +92,7 @@
 	func(DHCP, dhcp, na)
 
 #define CONFIG_BOOTCOMMAND \
+	"run boot_sd" \
 	"if test ${boot_fit} -eq 1; then "	\
 		"run update_to_fit;"	\
 	"fi;"	\
@@ -108,6 +111,13 @@
 	DEFAULT_LINUX_BOOT_ENV \
 	DEFAULT_MMC_TI_ARGS \
 	DEFAULT_FIT_TI_ARGS \
+	"boot_sd=" \
+		"setenv console 'ttyO0,115200n8';" \
+		"setenv bootargs 'root=/dev/mmcblk0p2 rw rootwait rootfstype=ext4 console=${console};'" \
+		"ext4load mmc 0:2 ${fdtaddr} /boot/am335x-boneblack.dtb;" \
+		"ext4load mmc 0:2 ${loadaddr} /boot/zImage;" \
+		"bootz ${loadaddr} - ${fdtaddr};" \
+		"\0" \
 	"bootpart=0:2\0" \
 	"bootdir=/boot\0" \
 	"bootfile=zImage\0" \
